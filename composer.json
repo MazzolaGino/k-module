@@ -1,0 +1,17 @@
+{
+    "name": "kuroxray/klib",
+    "autoload": {
+        "psr-4": {
+            "KLib\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "config": {
+        "platform": {
+            "php": "8.0.0"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
+    }
+}
