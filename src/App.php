@@ -8,6 +8,7 @@ use KLib\Implementation\ControllerManagerInterface;
 use KLib\Implementation\ProcessorManagerInterface;
 use KLib\Implementation\ClassManagerInterface;
 use KLib\Implementation\ConfigurationInterface;
+use Twig\Environment;
 
 /**
  */
@@ -63,6 +64,8 @@ class App
      */
     private ClassManagerInterface $clm;
 
+    private Environment $twig;
+
     /**
      * Summary of __construct
      *
@@ -78,7 +81,8 @@ class App
         AssetManagerInterface $asm,
         ControllerManagerInterface $ctm,
         ProcessorManagerInterface $prm,
-        ClassManagerInterface $clm
+        ClassManagerInterface $clm,
+        Environment $twig
     ) {
         $this->env = $env;
         $this->pa = $pa;
@@ -88,6 +92,7 @@ class App
         $this->ctm = $ctm;
         $this->prm = $prm;
         $this->clm = $clm;
+        $this->twig = $twig;
     }
 
     public function on(): void
@@ -95,6 +100,15 @@ class App
         $this->getClm()->load();
         $this->getCtm()->load();
         $this->getPrm()->load();
+    }
+
+    /**
+     *
+     * @return Environment
+     */
+    public function twig(): Environment
+    {
+        return $this->twig;
     }
 
     /**

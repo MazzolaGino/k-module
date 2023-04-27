@@ -48,16 +48,73 @@ class PluginGenerator
             ->createFile($rootDir . "/src/logs/debug.log", "")
             ->createDirectory($rootDir . "/src/Processor")
             ->createFile($rootDir . "/src/Processor/Processor.php", $this->generateControllerCode())
-            ->createDirectory($rootDir . "/src/template")
-            ->createFile($rootDir . "/src/.env", $this->generateEnvFileContent());
+            ->createDirectory($rootDir . "/src/templates")
+            ->createFile($rootDir . "/src/.env", $this->generateEnvFileContent())
+            ->createFile($rootDir . '/' .$this->name . '.php', $this->generatePluginFile())
+            ->createFile($rootDir . '/composer.json', $this->generateComposerFile());
     }
+
+    private function generatePluginFile(): string
+    {
+        return <<<EOF
+        <?php
+        /**
+         * Plugin Name: $this->name
+         * Description: $this->name
+         * Version: 0.0.1
+         * Author: 
+         * Author URI: 
+         */
+        
+        \$autoloaderFile = __DIR__ . '/../k-module/vendor/autoload.php';
+
+        define('{$this->formatNamespace()}_WP_PLUGIN_DIR', WP_PLUGIN_DIR.'/$this->name/src/');
+        define('{$this->formatNamespace()}_WP_PLUGIN_URL', WP_PLUGIN_URL.'/$this->name/src/');
+
+
+        if (file_exists(\$autoloaderFile)) {
+            require_once (\$autoloaderFile);
+        }
+
+        (new \KLib\AppBuilder({$this->formatNamespace()}_WP_PLUGIN_DIR, {$this->formatNamespace()}_WP_PLUGIN_URL))->getApp()->on();
+
+
+
+        EOF;
+    }
+
+    
+    private function generateComposerFile() {
+        $author = new \stdClass();
+
+        $author->name = 'klib user';
+        $author->email = 'user@sample.com';
+
+        $require = new \stdClass();
+
+        $contenu = [
+            'name' => strtolower($this->name).'/wordpress-plugin',
+            'license' => 'GNU',
+            'autoload' => [
+                'psr-4' => [
+                    $this->formatNamespace() . '\\' => 'src/'
+                ]
+            ],
+            'authors' => [$author],
+            'minimum-stability' => 'stable',
+            'require' => $require
+        ];
+    
+        return json_encode($contenu, JSON_PRETTY_PRINT);
+    }
+    
 
     private function generateControllerCode(): string
     {
         $code = <<<EOF
         <?php
 
-        namespace KLibPlugin\Controller;
+        namespace {$this->formatNamespace()}\Controller;
 
         use KLib\App;
         use KLib\AppBuilder;
@@ -73,8 +130,8 @@ class PluginGenerator
              * @return App
              */
             public function getApp(): App {
-                \$dir = WP_PLUGIN_DIR . '/K-module-test/src/';
-                \$url = WP_PLUGIN_URL . '/K-module-test/src/';
+                \$dir = WP_PLUGIN_DIR . '/$this->name/src/';
+                \$url = WP_PLUGIN_URL . '/$this->name/src/';
 
                 return (new AppBuilder(\$dir, \$url))->getApp();
             }
@@ -99,7 +156,7 @@ class PluginGenerator
         $code = <<<EOF
         <?php
 
-        namespace KLibPlugin\Processor;
+        namespace {$this->formatNamespace()}\Processor;
 
         use KLib\App;
         use KLib\AppBuilder;
@@ -113,8 +170,8 @@ class PluginGenerator
              */
             public function getApp(): App
             {
-                \$dir = WP_PLUGIN_DIR . '/K-module-test/src/';
-                \$url = WP_PLUGIN_URL . '/K-module-test/src/';
+                \$dir = WP_PLUGIN_DIR . '/$this->name/src/';
+                \$url = WP_PLUGIN_URL . '/$this->name/src/';
 
                 return (new AppBuilder(\$dir, \$url))->getApp();
             }

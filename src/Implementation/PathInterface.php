@@ -5,12 +5,28 @@ namespace KLib\Implementation;
 interface PathInterface
 {
     /**
+     * 
+     *
+     * @param string $class
+     * @return string
+     */
+    public function path(): string;
+
+    /**
+     * 
+     *
+     * @param string $class
+     * @return string
+     */
+    public function url(): string;
+
+    /**
      *
      * @param string $class
      * @return string
      */
     public function fromClass(string $class): string;
-    
+
     /**
      *
      * @param string $env

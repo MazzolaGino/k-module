@@ -10,6 +10,8 @@ use KLib\Manager\AssetManager;
 use KLib\Manager\ControllerManager;
 use KLib\Manager\ProcessManager;
 use KLib\Manager\ClassesManager;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 /**
  *
@@ -32,6 +34,10 @@ class AppBuilder
         $filename = $pathObj->fromEnv($env);
         $config = new ConfigurationManager($filename);
 
+        $templateDir = $pathObj->path().'templates';
+        $twig = new Environment(new FilesystemLoader([$templateDir]));
+        
+
         $this->app = new App(
             $env,
             $pathObj,
@@ -40,7 +46,8 @@ class AppBuilder
             new AssetManager($pathObj, $config->has('assets') ? $config->get('assets') : []),
             new ControllerManager($config, $pathObj, $config->has('controllers') ? $config->get('controllers') : []),
             new ProcessManager($config, $pathObj, $config->has('processors') ? $config->get('processors') : []),
-            new ClassesManager($pathObj, $config->has('classes') ? $config->get('classes') : [])
+            new ClassesManager($pathObj, $config->has('classes') ? $config->get('classes') : []),
+            $twig
         );
     }
 

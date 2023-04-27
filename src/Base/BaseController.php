@@ -88,16 +88,8 @@ abstract class BaseController implements ControllerInterface
      */
     protected function render(string $template, array $params): void
     {
-        $dir = dirname((new \ReflectionClass($this))->getFileName());
-        $tpl = $this->getApp()->getPa()->fromTemplate($this->getControllerName(), $template);
-
-        if (!file_exists($tpl)) {
-            throw new \InvalidArgumentException("Unable to find template at path ($tpl)");
-        }
-
-        extract($params);
-
-        include $tpl;
+        $app =  $this->getApp();
+        echo $app->twig()->render($this->getControllerName() . '/' . $template.'.html.twig', $params);
     }
 
     /**

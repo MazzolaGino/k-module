@@ -2,7 +2,6 @@
 
 namespace Klib\Manager;
 
-use KLib\Implementation\ClassInterface;
 use KLib\Implementation\PathInterface;
 
 /**
@@ -33,6 +32,26 @@ class Path implements PathInterface
     {
         $this->path = $p;
         $this->url = $u;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return string
+     */
+    public function path(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return string
+     */
+    public function url(): string
+    {
+        return $this->url;
     }
 
     /**

@@ -13,3 +13,8 @@ $pluginName = $argv[1];
 
 $generator = new PluginGenerator($pluginName);
 $generator->generatePlugin(__DIR__);
+
+$in = null;
+$out = null;
+
+exec("cd ../$pluginName && composer dump-autoload", $in, $out);
