@@ -47,7 +47,7 @@ class PluginGenerator
             ->createDirectory($rootDir . "/src/logs")
             ->createFile($rootDir . "/src/logs/debug.log", "")
             ->createDirectory($rootDir . "/src/Processor")
-            ->createFile($rootDir . "/src/Processor/Processor.php", $this->generateControllerCode())
+            ->createFile($rootDir . "/src/Processor/Processor.php", $this->generateProcessorCode())
             ->createDirectory($rootDir . "/src/templates")
             ->createFile($rootDir . "/src/.env", $this->generateEnvFileContent())
             ->createFile($rootDir . '/' .$this->name . '.php', $this->generatePluginFile())
@@ -183,7 +183,7 @@ class PluginGenerator
 
             public function getProcessorName(): string
             {
-                \$class = get_class($this);
+                \$class = get_class(\$this);
                 \$namespace = \$this->getApp()->getCnf()->get('processor_namespace');
                 \$name = str_replace(\$namespace, '', \$class);
                 \$name = str_replace('Processor', '', \$name);

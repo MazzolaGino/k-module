@@ -5,6 +5,7 @@ namespace KLib\Base;
 use KLib\App;
 use KLib\Implementation\ProcessorInterface;
 use KLib\Manager\ScriptManager;
+use KLib\Manager\AssetManager;
 
 /**
  * Summary of BaseController
@@ -14,8 +15,11 @@ abstract class BaseProcessor implements ProcessorInterface
     protected array $actions;
 
     protected ScriptManager $scripts;
+    protected AssetManager $styles;
 
     protected string $processor;
+
+    protected $app;
 
     abstract public function getApp(): App;
     abstract public function getProcessorName(): string;
@@ -24,6 +28,7 @@ abstract class BaseProcessor implements ProcessorInterface
     {
         $this->processor = $this->getProcessorName();
         $this->scripts = $this->getApp()->getScm();
+        $this->styles = $this->getApp()->getAsm();
         $this->process();
     }
 
@@ -58,16 +63,14 @@ abstract class BaseProcessor implements ProcessorInterface
 
     protected function render(string $template, array $params): void
     {
-        $dir = dirname((new \ReflectionClass($this))->getFileName());
-        $tpl = $this->getApp()->getPa()->fromTemplate($this->processor, $template);
+        $app =  $this->getApp();
+        echo $app->twig()->render($this->getProcessorName() . '/' . $template.'.html.twig', $params);
+    }
 
-        if (!file_exists($tpl)) {
-            throw new \InvalidArgumentException("Unable to find template at path ($tpl)");
-        }
-
-        extract($params);
-
-        include $tpl;
+    protected function renderContent(string $template, array $params): string
+    {
+        $app =  $this->getApp();
+        return $app->twig()->render($this->getProcessorName() . '/' . $template.'.html.twig', $params);
     }
 
     private function buildActionArgs($doc, $method): mixed
