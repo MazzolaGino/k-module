@@ -37,8 +37,6 @@ class Item {
             $m = $this->method;
             $p = $this->priority[1] ?? null;
             $a = $this->args[1] ?? null;
-        
-            var_dump($this->method[1]);
     
         // Ajoute l'action
         $action($h, $m, $p, $a);
