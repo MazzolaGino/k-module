@@ -32,14 +32,15 @@ class Item {
         }
     
         // Détermine les paramètres de l'action
-        $params = [
-            $this->hook[1],
-            $this->method,
-            $this->priority[1] ?? null,
-            $this->args[1] ?? null
-        ];
+       
+            $h = $this->hook[1];
+            $m = $this->method;
+            $p = $this->priority[1] ?? null;
+            $a = $this->args[1] ?? null;
+        
+            var_dump($this->method[1]);
     
         // Ajoute l'action
-        $action(...$params);
+        $action($h, $m, $p, $a);
     }
 }
