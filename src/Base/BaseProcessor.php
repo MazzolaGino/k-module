@@ -2,6 +2,7 @@
 
 namespace KLib\Base;
 
+use KLib\Action\Item;
 use KLib\App;
 use KLib\Implementation\ProcessorInterface;
 use KLib\Manager\ScriptManager;
@@ -12,6 +13,7 @@ use KLib\Manager\AssetManager;
  */
 abstract class BaseProcessor implements ProcessorInterface
 {
+
     protected array $actions;
 
     protected ScriptManager $scripts;
@@ -26,6 +28,7 @@ abstract class BaseProcessor implements ProcessorInterface
 
     public function init(): void 
     {
+        
         $this->processor = $this->getProcessorName();
         $this->scripts = $this->getApp()->getScm();
         $this->styles = $this->getApp()->getAsm();
@@ -49,15 +52,22 @@ abstract class BaseProcessor implements ProcessorInterface
             }
 
             $method = $reflector->getMethod($methodName);
-            $hookParameters = $this->buildActionArgs($method->getDocComment(), $methodName);
+            $args = $this->buildActionArgs($method->getDocComment(), $methodName);
+
+            $action = new Item(
+                $args['hook'], 
+                [$this, $methodName], 
+                $args['priority'],
+                $args['args'], 
+                $args['action']);
 
             try {
-                add_action(...$hookParameters);
+                $action->executeAdd();
             } catch (\Exception $e) {
                 throw new \Exception(sprintf('Error adding action for method %s: %s', $methodName, $e->getMessage()));
             }
 
-            $this->actions[$hookParameters[0]] = $methodName;
+            $this->actions[] = $methodName;
         }
     }
 
@@ -75,20 +85,18 @@ abstract class BaseProcessor implements ProcessorInterface
 
     private function buildActionArgs($doc, $method): mixed
     {
-        preg_match('/@hook ([^\s]+)/', $doc, $matches);
 
-        preg_match('/@priority ([^\s]+)/', $doc, $priority);
+        $element = [];
 
-        preg_match('/@args ([^\s]+)/', $doc, $args);
+        preg_match('/@action ([^\s]+)/', $doc, $element['action']);
 
-        $params = [$matches[1], [$this, $method]];
+        preg_match('/@hook ([^\s]+)/', $doc, $element['hook']);
 
-        if (isset($priority[1]) && isset($args[1])) {
-            $params[] = $priority[1];
-            $params[] = $args[1];
-        }
+        preg_match('/@priority ([^\s]+)/', $doc, $element['priority']);
 
-        return $params;
+        preg_match('/@args ([^\s]+)/', $doc, $element['args']);
+
+        return $element;
     }
 
 }
